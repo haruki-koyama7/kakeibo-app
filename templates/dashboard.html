@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>家計簿アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="ledger-header">
+    <div class="ledger-header-inner">
+        <div>
+            <h1 class="ledger-title">家計簿</h1>
+            <div class="ledger-subtitle">{{ current_user.name }}さんの帳簿</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 16px;">
+            <form method="POST" action="/logout">
+                <button type="submit" class="btn btn-sm" style="border-color: var(--paper); color: var(--paper);">ログアウト</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+    <div class="container">
+        <a href="/transactions/new" class="btn btn-primary add-link">＋ 収支を入力する</a>
+        <a href="/calendar" class="btn add-link">📅 カレンダーで見る</a>
+        <a href="/summary" class="btn add-link">📊 月次サマリーを見る</a>
+
+        <h2 class="section-title">登録済みカテゴリ <span class="en">CATEGORIES</span></h2>
+            <a href="/categories/new" class="btn btn-sm" style="margin-bottom: 12px; display: inline-block;">＋ カテゴリを追加</a>
+            <ul class="category-tabs">
+            {% for category in categories %}
+            <li class="category-tab" style="--tab-color: {{ category.color }};">
+                <span class="dot"></span>
+                {{ category.name }}
+                <span class="type">{{ '支出' if category.type == 'expense' else '収入' }}</span>
+            </li>
+            {% endfor %}
+        </ul>
+
+        <h2 class="section-title">取引履歴 <span class="en">TRANSACTIONS</span></h2>
+        <ul class="ledger-table">
+            {% for t in transactions %}
+            <li class="ledger-row">
+                <span class="date">{{ t.transaction_date }}</span>
+                <span>
+                    <span class="cat-name" style="--row-color: {{ t.category.color }};">{{ t.category.name }}</span>
+                    {% if t.memo %}<span class="memo">— {{ t.memo }}</span>{% endif %}
+                </span>
+                <span class="amount {{ t.type }}">{{ '%.0f'|format(t.amount) }}円</span>
+                <span class="row-actions">
+                    <a href="/transactions/{{ t.id }}/edit" class="btn btn-sm">編集</a>
+                    <form method="POST" action="/transactions/{{ t.id }}/delete" style="display:inline;" onsubmit="return confirm('本当に削除しますか？');">
+                        <button type="submit" class="btn btn-sm btn-danger">削除</button>
+                    </form>
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</body>
+</html>

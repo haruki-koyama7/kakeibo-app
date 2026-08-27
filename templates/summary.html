@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>月次サマリー - 家計簿アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="ledger-header">
+        <div class="ledger-header-inner">
+            <div>
+                <h1 class="ledger-title">家計簿</h1>
+                <div class="ledger-subtitle">KAKEIBO LEDGER</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="calendar-nav">
+            <a href="/summary?year={{ prev_year }}&month={{ prev_month }}">← 前月</a>
+            <div class="month-label">{{ year }}年{{ month }}月のまとめ</div>
+            <a href="/summary?year={{ next_year }}&month={{ next_month }}">翌月 →</a>
+        </div>
+
+        <div class="summary-totals">
+            <div class="cell">
+                <div class="cell-label">収入</div>
+                <div class="cell-value income">{{ '%.0f'|format(total_income) }}円</div>
+            </div>
+            <div class="cell">
+                <div class="cell-label">支出</div>
+                <div class="cell-value expense">{{ '%.0f'|format(total_expense) }}円</div>
+            </div>
+            <div class="cell">
+                <div class="cell-label">収支</div>
+                <div class="cell-value {{ 'income' if balance >= 0 else 'expense' }}">{{ '%.0f'|format(balance) }}円</div>
+            </div>
+        </div>
+
+        <h2 class="section-title">支出の内訳 <span class="en">EXPENSE</span></h2>
+        {% if expense_breakdown %}
+        <ul class="breakdown-list">
+            {% for item in expense_breakdown %}
+            <li class="breakdown-item" style="--item-color: {{ item.color }};">
+                <div class="breakdown-item-header">
+                    <span class="breakdown-item-name"><span class="dot"></span>{{ item.name }}</span>
+                    <span>{{ '%.0f'|format(item.amount) }}円 ({{ item.percent }}%)</span>
+                </div>
+                <div class="breakdown-bar-track">
+                    <div class="breakdown-bar-fill" style="--bar-width: {{ item.percent }}%;"></div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-state">この月の支出記録はまだありません。</p>
+        {% endif %}
+
+        <h2 class="section-title">収入の内訳 <span class="en">INCOME</span></h2>
+        {% if income_breakdown %}
+        <ul class="breakdown-list">
+            {% for item in income_breakdown %}
+            <li class="breakdown-item" style="--item-color: {{ item.color }};">
+                <div class="breakdown-item-header">
+                    <span class="breakdown-item-name"><span class="dot"></span>{{ item.name }}</span>
+                    <span>{{ '%.0f'|format(item.amount) }}円 ({{ item.percent }}%)</span>
+                </div>
+                <div class="breakdown-bar-track">
+                    <div class="breakdown-bar-fill" style="--bar-width: {{ item.percent }}%;"></div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-state">この月の収入記録はまだありません。</p>
+        {% endif %}
+
+        <a href="/" class="back-link">← ダッシュボードに戻る</a>
+    </div>
+</body>
+</html>

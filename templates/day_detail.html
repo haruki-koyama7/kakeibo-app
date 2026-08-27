@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ selected_date }}の記録 - 家計簿アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="ledger-header">
+        <div class="ledger-header-inner">
+            <div>
+                <h1 class="ledger-title">{{ selected_date }}</h1>
+                <div class="ledger-subtitle">DAILY RECORD</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <a href="/transactions/new" class="btn btn-primary add-link">＋ 収支を入力する</a>
+
+        <h2 class="section-title">記録一覧 <span class="en">ENTRIES</span></h2>
+        {% if transactions %}
+        <ul class="ledger-table">
+            {% for t in transactions %}
+            <li class="ledger-row">
+                <span class="date">{{ t.transaction_date }}</span>
+                <span>
+                    <span class="cat-name" style="--row-color: {{ t.category.color }};">{{ t.category.name }}</span>
+                    {% if t.memo %}<span class="memo">— {{ t.memo }}</span>{% endif %}
+                </span>
+                <span class="amount {{ t.type }}">{{ '%.0f'|format(t.amount) }}円</span>
+                <span class="row-actions">
+                    <a href="/transactions/{{ t.id }}/edit" class="btn btn-sm">編集</a>
+                    <form method="POST" action="/transactions/{{ t.id }}/delete" style="display:inline;" onsubmit="return confirm('本当に削除しますか？');">
+                        <button type="submit" class="btn btn-sm btn-danger">削除</button>
+                    </form>
+                </span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p style="color: var(--ink-soft);">この日の記録はまだありません。</p>
+        {% endif %}
+
+        <a href="/calendar?year={{ selected_date.year }}&month={{ selected_date.month }}" class="back-link">← カレンダーに戻る</a>
+    </div>
+</body>
+</html>

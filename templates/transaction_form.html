@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if transaction %}収支を編集{% else %}収支を入力{% endif %} - 家計簿アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="ledger-header">
+        <div class="ledger-header-inner">
+            <div>
+                <h1 class="ledger-title">{% if transaction %}記帳を編集{% else %}記帳する{% endif %}</h1>
+                <div class="ledger-subtitle">{% if transaction %}EDIT ENTRY{% else %}NEW ENTRY{% endif %}</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <form class="ledger-card" method="POST" action="{% if transaction %}/transactions/{{ transaction.id }}/edit{% else %}/transactions/new{% endif %}">
+            <div class="field">
+                <label>種類</label>
+                <select name="type" id="type" required>
+                    <option value="expense" {% if transaction and transaction.type == 'expense' %}selected{% endif %}>支出</option>
+                    <option value="income" {% if transaction and transaction.type == 'income' %}selected{% endif %}>収入</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>カテゴリ</label>
+                <select name="category_id" required>
+                    {% for category in categories %}
+                    <option value="{{ category.id }}" {% if transaction and transaction.category_id == category.id %}selected{% endif %}>
+                        {{ category.name }} ({{ '支出' if category.type == 'expense' else '収入' }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="field">
+                <label>金額</label>
+                <input type="number" name="amount" step="1" min="0" value="{{ transaction.amount if transaction else '' }}" required>
+            </div>
+
+            <div class="field">
+                <label>日付</label>
+                <input type="date" name="transaction_date" value="{{ transaction.transaction_date if transaction else '' }}" required>
+            </div>
+
+            <div class="field">
+                <label>メモ(任意)</label>
+                <input type="text" name="memo" value="{{ transaction.memo if transaction else '' }}">
+            </div>
+
+            <button type="submit" class="btn btn-primary">{% if transaction %}更新する{% else %}登録する{% endif %}</button>
+        </form>
+
+        <a href="/" class="back-link">← ダッシュボードに戻る</a>
+    </div>
+</body>
+</html>

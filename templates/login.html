@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>ログイン - 家計簿アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="ledger-header">
+        <div class="ledger-header-inner">
+            <div>
+                <h1 class="ledger-title">家計簿</h1>
+                <div class="ledger-subtitle">KAKEIBO LEDGER</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container" style="max-width: 400px;">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div style="background: var(--vermillion-soft); color: var(--vermillion); padding: 10px 14px; border-radius: 4px; margin-bottom: 16px; font-size: 13px;">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <h2 class="section-title">ログイン <span class="en">LOGIN</span></h2>
+
+        <form class="ledger-card" method="POST" action="/login">
+            <div class="field">
+                <label>メールアドレス</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="field">
+                <label>パスワード</label>
+                <input type="password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary">ログイン</button>
+        </form>
+
+        <p style="text-align: center; margin-top: 16px; font-size: 13px; color: var(--ink-soft);">
+            アカウントをお持ちでないですか？ <a href="/signup" style="color: var(--indigo);">新規登録</a>
+        </p>
+    </div>
+</body>
+</html>

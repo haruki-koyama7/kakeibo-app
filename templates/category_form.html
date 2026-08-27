@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>カテゴリを追加 - 家計簿アプリ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="ledger-header">
+        <div class="ledger-header-inner">
+            <div>
+                <h1 class="ledger-title">カテゴリを追加</h1>
+                <div class="ledger-subtitle">NEW CATEGORY</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div style="background: var(--expense-soft); color: var(--expense); padding: 10px 14px; border-radius: 6px; margin-bottom: 16px; font-size: 13px;">
+                    {{ messages[0] }}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form class="ledger-card" method="POST" action="/categories/new">
+            <div class="field">
+                <label>カテゴリ名</label>
+                <input type="text" name="name" placeholder="例: 書籍代" required>
+            </div>
+
+            <div class="field">
+                <label>種類</label>
+                <select name="type" required>
+                    <option value="expense">支出</option>
+                    <option value="income">収入</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label>色</label>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    {% set colors = ['#5B57E0', '#E5484D', '#2FA372', '#F5A623', '#FF6B9D', '#4EA1D3', '#8B6FC9', '#78766E'] %}
+                    {% for c in colors %}
+                    <label style="cursor: pointer;">
+                        <input type="radio" name="color" value="{{ c }}" {% if loop.first %}checked{% endif %} style="display: none;">
+                        <span style="display: block; width: 28px; height: 28px; border-radius: 50%; background: {{ c }}; border: 2px solid transparent;" onclick="this.previousElementSibling ? null : null"></span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary">カテゴリを作成</button>
+        </form>
+
+        <a href="/" class="back-link">← ダッシュボードに戻る</a>
+    </div>
+
+    <script>
+        // 選択した色にチェックマークをつける
+        document.querySelectorAll('input[name="color"]').forEach(function(radio) {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('input[name="color"] + span').forEach(function(span) {
+                    span.style.border = '2px solid transparent';
+                });
+                this.nextElementSibling.style.border = '2px solid var(--text)';
+            });
+        });
+        // 初期状態で最初の色にチェックマーク
+        document.querySelector('input[name="color"]:checked').nextElementSibling.style.border = '2px solid var(--text)';
+    </script>
+</body>
+</html>
